@@ -1,4 +1,4 @@
-# **ISKS-2025-2026**
+# **ISKS-2025-2026-FIŠ-RST-2-LETNIK-IZR**
 
 Internet stvari in kiberfizični sistemi 2025/2026 | Fakulteta za informacijske študije  
 RST 2. letnik, izredni študij  
