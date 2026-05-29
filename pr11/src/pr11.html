@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket</title>
+</head>
+<body>
+<p>IoT vmesnik - WebSocket.</p>
+<button id="pošlji-JSON-sporočilo" onclick="pošljiJSONsporočilo()">pošljiJSONsporočilo</button>
+<p></p>
+Sporočilo: <input id="JSONsporočilo" size="50" value='{"tipSporočila": "LED", "pin": 2, "vrednost": 1}'>
+<br>
+
+<div id="izpis1">×</div>
+<br>
+
+<canvas id="platno-1" width="200" height="100" style="border:1px dashed #099999"></canvas>
+
+<script>
+"use strict";
+
+// "boilerplate" koda za delo s platnom (canvas) v JavaScriptu
+const plat1 = document.getElementById("platno-1");
+const platno1 = plat1.getContext("2d");
+
+let izpis1 = document.getElementById("izpis1"); // html element, v katerega bomo izpisovali sporočila, ki jih prejmemo iz node.js serverja preko WebSocket port 8888 povezave
+
+let ws = new WebSocket("ws://192.168.1.198:8888"); // ustvarimo povezavo prek spletnega vtičnika WebSocket - povežemo se z node.js preko vrat oz. port-a 8888
+
+function pošljiJSONsporočilo(){ // ob pritisku na gumb izvedemo funkcijo pošljiJSONsporočilo
+    let JSONsporočilo = document.getElementById("JSONsporočilo").value; // string iz tekstnega "input" polja html vmesnika
+    ws.send(JSONsporočilo); // naše sporočilo "Test 456" pošljemo preko spletnega vtičnika ws port 8888
+}
+
+ws.onmessage = function(event){ // funkcija, ki se izvede, ko prejme sporočilo iz node.js serverja preko WebSocket port 8888 povezave
+    let msg = JSON.parse(event.data); // string iz ws spravimo v JSON objekt
+    switch(msg.tipSporočila){ // glede na tip sporočila izvedemo ustrezen del kode
+        case "tipka":
+            izpis1.innerHTML = event.data; // v primeru, da je tip sporočila "tipka" izpišemo celotno sporočilo, ki smo ga prejeli iz node.js serverja, v html element z id-jem "izpis1"
+            if(msg.vrednost == 1){
+                platno1.fillStyle = "#0000FF"; // nastavimo barvo na modro
+                platno1.fillRect(0, 0, 200, 100); // celotno platno bo modre barve (pravokotnik prekrije celotno platno)
+            }
+            else if(msg.vrednost == 0){
+                platno1.fillStyle = "#FFFFFF"; // nastavimo barvo na belo
+                platno1.fillRect(0, 0, 200, 100); // celotno platno bo bele barve (pravokotnik bele barve prekrije celotno platno)                
+            }
+        break;
+    };
+};
+
+</script>
+
+</body>
+</html>
